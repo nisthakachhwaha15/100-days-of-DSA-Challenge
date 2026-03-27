@@ -1,0 +1,120 @@
+#include <stdio.h>
+#define MAX 5
+
+int dq[MAX];
+int front = -1, rear = -1;
+
+// Check empty
+int isEmpty() {
+    return (front == -1);
+}
+
+// Push front
+void push_front(int value) {
+    if (front == 0) {
+        printf("Overflow at front\n");
+    } else if (isEmpty()) {
+        front = rear = 0;
+        dq[front] = value;
+    } else {
+        dq[--front] = value;
+    }
+    printf("Inserted at front: %d\n", value);
+}
+
+// Push back
+void push_back(int value) {
+    if (rear == MAX - 1) {
+        printf("Overflow at rear\n");
+    } else if (isEmpty()) {
+        front = rear = 0;
+        dq[rear] = value;
+    } else {
+        dq[++rear] = value;
+    }
+    printf("Inserted at rear: %d\n", value);
+}
+
+// Pop front
+void pop_front() {
+    if (isEmpty()) {
+        printf("Deque is EMPTY\n");
+    } else {
+        printf("Removed from front: %d\n", dq[front]);
+        if (front == rear)
+            front = rear = -1;
+        else
+            front++;
+    }
+}
+
+// Pop back
+void pop_back() {
+    if (isEmpty()) {
+        printf("Deque is EMPTY\n");
+    } else {
+        printf("Removed from rear: %d\n", dq[rear]);
+        if (front == rear)
+            front = rear = -1;
+        else
+            rear--;
+    }
+}
+
+// Display
+void display() {
+    if (isEmpty()) {
+        printf("Deque is EMPTY\n");
+    } else {
+        printf("Deque: ");
+        for (int i = front; i <= rear; i++) {
+            printf("%d ", dq[i]);
+        }
+        printf("\n");
+    }
+}
+
+// Size
+int size() {
+    if (isEmpty()) return 0;
+    return rear - front + 1;
+}
+
+int main() {
+    int choice, value;
+
+    while (1) {
+        printf("\n1.push_front\n2.push_back\n3.pop_front\n4.pop_back\n5.display\n6.size\n7.exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                printf("Enter value: ");
+                scanf("%d", &value);
+                push_front(value);
+                break;
+            case 2:
+                printf("Enter value: ");
+                scanf("%d", &value);
+                push_back(value);
+                break;
+            case 3:
+                pop_front();
+                break;
+            case 4:
+                pop_back();
+                break;
+            case 5:
+                display();
+                break;
+            case 6:
+                printf("Size: %d\n", size());
+                break;
+            case 7:
+                return 0;
+            default:
+                printf("Invalid choice\n");
+        }
+    }
+}
