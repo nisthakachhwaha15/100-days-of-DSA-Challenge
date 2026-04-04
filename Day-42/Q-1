@@ -1,0 +1,147 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Node for Queue (Linked List)
+typedef struct Node {
+    int data;
+    struct Node* next;
+} Node;
+
+// Queue Structure
+typedef struct Queue {
+    Node* front;
+    Node* rear;
+} Queue;
+
+// Stack Node
+typedef struct StackNode {
+    int data;
+    struct StackNode* next;
+} StackNode;
+
+// Stack Structure
+typedef struct Stack {
+    StackNode* top;
+} Stack;
+
+// Create new Queue
+Queue* createQueue() {
+    Queue* q = (Queue*)malloc(sizeof(Queue));
+    q->front = NULL;
+    q->rear = NULL;
+    return q;
+}
+
+// Create new Stack
+Stack* createStack() {
+    Stack* s = (Stack*)malloc(sizeof(Stack));
+    s->top = NULL;
+    return s;
+}
+
+// Enqueue in Queue
+void enqueue(Queue* q, int data) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->next = NULL;
+    
+    if (q->rear == NULL) {
+        q->front = q->rear = newNode;
+    } else {
+        q->rear->next = newNode;
+        q->rear = newNode;
+    }
+}
+
+// Dequeue from Queue
+int dequeue(Queue* q) {
+    if (q->front == NULL) return -1;
+    
+    Node* temp = q->front;
+    int data = temp->data;
+    q->front = q->front->next;
+    
+    if (q->front == NULL) {
+        q->rear = NULL;
+    }
+    
+    free(temp);
+    return data;
+}
+
+// Push into Stack
+void push(Stack* s, int data) {
+    StackNode* newNode = (StackNode*)malloc(sizeof(StackNode));
+    newNode->data = data;
+    newNode->next = s->top;
+    s->top = newNode;
+}
+
+// Pop from Stack
+int pop(Stack* s) {
+    if (s->top == NULL) return -1;
+    
+    StackNode* temp = s->top;
+    int data = temp->data;
+    s->top = s->top->next;
+    free(temp);
+    return data;
+}
+
+// Function to reverse queue using stack
+void reverseQueue(Queue* q) {
+    Stack* s = createStack();
+    
+    // Step 1: Push all queue elements into stack
+    while (q->front != NULL) {
+        push(s, dequeue(q));
+    }
+    
+    // Step 2: Pop from stack and enqueue back into queue
+    while (s->top != NULL) {
+        enqueue(q, pop(s));
+    }
+    
+    free(s);  // Free stack memory
+}
+
+// Print queue
+void printQueue(Queue* q) {
+    Node* temp = q->front;
+    while (temp != NULL) {
+        printf("%d ", temp->data);
+        temp = temp->next;
+    }
+    printf("\n");
+}
+
+// Main Function
+int main() {
+    int N;
+    scanf("%d", &N);
+    
+    Queue* q = createQueue();
+    
+    // Read N integers and enqueue them
+    for (int i = 0; i < N; i++) {
+        int x;
+        scanf("%d", &x);
+        enqueue(q, x);
+    }
+    
+    // Reverse the queue using stack
+    reverseQueue(q);
+    
+    // Print the reversed queue
+    printQueue(q);
+    
+    // Free remaining queue memory
+    while (q->front != NULL) {
+        Node* temp = q->front;
+        q->front = q->front->next;
+        free(temp);
+    }
+    free(q);
+    
+    return 0;
+}
