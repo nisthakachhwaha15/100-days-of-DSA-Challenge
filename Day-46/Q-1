@@ -1,0 +1,124 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Binary Tree Node
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+// Create new node
+Node* createNode(int data) {
+    if (data == -1) return NULL;
+    
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+// Build Binary Tree from Level Order input
+Node* buildTree(int arr[], int n) {
+    if (n == 0 || arr[0] == -1) return NULL;
+    
+    Node* root = createNode(arr[0]);
+    
+    Node** queue = (Node**)malloc(n * sizeof(Node*));
+    int front = 0, rear = 0;
+    queue[rear++] = root;
+    
+    int i = 1;
+    while (front < rear && i < n) {
+        Node* curr = queue[front++];
+        
+        // Left child
+        if (i < n) {
+            curr->left = createNode(arr[i]);
+            if (curr->left != NULL) {
+                queue[rear++] = curr->left;
+            }
+            i++;
+        }
+        
+        // Right child
+        if (i < n) {
+            curr->right = createNode(arr[i]);
+            if (curr->right != NULL) {
+                queue[rear++] = curr->right;
+            }
+            i++;
+        }
+    }
+    
+    free(queue);
+    return root;
+}
+
+// Level Order Traversal (BFS) - Print each level on a new line
+void levelOrderTraversal(Node* root) {
+    if (root == NULL) {
+        printf("\n");
+        return;
+    }
+    
+    Node** queue = (Node**)malloc(1000 * sizeof(Node*));  // Assuming max 1000 nodes
+    int front = 0, rear = 0;
+    queue[rear++] = root;
+    
+    while (front < rear) {
+        int levelSize = rear - front;   // Number of nodes at current level
+        
+        for (int i = 0; i < levelSize; i++) {
+            Node* curr = queue[front++];
+            printf("%d", curr->data);
+            
+            if (i < levelSize - 1) {
+                printf(" ");
+            }
+            
+            // Enqueue left child
+            if (curr->left != NULL) {
+                queue[rear++] = curr->left;
+            }
+            // Enqueue right child
+            if (curr->right != NULL) {
+                queue[rear++] = curr->right;
+            }
+        }
+        printf("\n");   // New line after each level
+    }
+    
+    free(queue);
+}
+
+// Free tree memory
+void freeTree(Node* root) {
+    if (root == NULL) return;
+    freeTree(root->left);
+    freeTree(root->right);
+    free(root);
+}
+
+int main() {
+    int N;
+    scanf("%d", &N);
+    
+    int* arr = (int*)malloc(N * sizeof(int));
+    for (int i = 0; i < N; i++) {
+        scanf("%d", &arr[i]);
+    }
+    
+    // Build the tree
+    Node* root = buildTree(arr, N);
+    
+    // Perform Level Order Traversal (level by level)
+    levelOrderTraversal(root);
+    
+    // Clean up
+    freeTree(root);
+    free(arr);
+    
+    return 0;
+}
