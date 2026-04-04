@@ -1,0 +1,102 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Binary Tree Node
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+// Create new node
+Node* createNode(int data) {
+    if (data == -1) return NULL;
+    
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+// Build Binary Tree from Level Order Traversal
+Node* buildTree(int arr[], int n) {
+    if (n == 0 || arr[0] == -1) return NULL;
+    
+    Node* root = createNode(arr[0]);
+    
+    Node** queue = (Node**)malloc(n * sizeof(Node*));
+    int front = 0, rear = 0;
+    queue[rear++] = root;
+    
+    int i = 1;
+    
+    while (front < rear && i < n) {
+        Node* curr = queue[front++];
+        
+        // Left child
+        if (i < n) {
+            curr->left = createNode(arr[i]);
+            if (curr->left != NULL) {
+                queue[rear++] = curr->left;
+            }
+            i++;
+        }
+        
+        // Right child
+        if (i < n) {
+            curr->right = createNode(arr[i]);
+            if (curr->right != NULL) {
+                queue[rear++] = curr->right;
+            }
+            i++;
+        }
+    }
+    
+    free(queue);
+    return root;
+}
+
+// Function to find height (maximum depth) of binary tree
+// Height of leaf node is 1 (as per standard DSA convention in many platforms)
+int height(Node* root) {
+    if (root == NULL) {
+        return 0;
+    }
+    
+    int leftHeight = height(root->left);
+    int rightHeight = height(root->right);
+    
+    // Return maximum of left and right subtree height + 1 (for current node)
+    return (leftHeight > rightHeight ? leftHeight : rightHeight) + 1;
+}
+
+// Free tree memory
+void freeTree(Node* root) {
+    if (root == NULL) return;
+    freeTree(root->left);
+    freeTree(root->right);
+    free(root);
+}
+
+int main() {
+    int N;
+    scanf("%d", &N);
+    
+    int* arr = (int*)malloc(N * sizeof(int));
+    for (int i = 0; i < N; i++) {
+        scanf("%d", &arr[i]);
+    }
+    
+    // Build the tree
+    Node* root = buildTree(arr, N);
+    
+    // Calculate and print height
+    printf("%d\n", height(root));
+    
+    // Clean up
+    freeTree(root);
+    free(arr);
+    
+    return 0;
+}
