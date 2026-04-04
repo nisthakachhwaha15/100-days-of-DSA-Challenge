@@ -1,0 +1,100 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Binary Tree Node Structure
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+// Function to create a new node
+Node* createNode(int data) {
+    if (data == -1) return NULL;   // -1 means NULL
+    
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+// Build Binary Tree from Level Order array using Queue
+Node* buildTreeFromLevelOrder(int arr[], int n) {
+    if (n == 0 || arr[0] == -1) return NULL;
+    
+    // Create root
+    Node* root = createNode(arr[0]);
+    
+    // Queue for level order construction
+    Node** queue = (Node**)malloc(n * sizeof(Node*));
+    int front = 0, rear = 0;
+    queue[rear++] = root;
+    
+    int i = 1;  // Index in input array
+    
+    while (front < rear && i < n) {
+        Node* current = queue[front++];
+        
+        // Left child
+        if (i < n) {
+            current->left = createNode(arr[i]);
+            if (current->left != NULL) {
+                queue[rear++] = current->left;
+            }
+            i++;
+        }
+        
+        // Right child
+        if (i < n) {
+            current->right = createNode(arr[i]);
+            if (current->right != NULL) {
+                queue[rear++] = current->right;
+            }
+            i++;
+        }
+    }
+    
+    free(queue);
+    return root;
+}
+
+// Inorder Traversal (Left - Root - Right)
+void inorderTraversal(Node* root) {
+    if (root == NULL) return;
+    
+    inorderTraversal(root->left);
+    printf("%d ", root->data);
+    inorderTraversal(root->right);
+}
+
+// Free the tree memory
+void freeTree(Node* root) {
+    if (root == NULL) return;
+    freeTree(root->left);
+    freeTree(root->right);
+    free(root);
+}
+
+int main() {
+    int N;
+    scanf("%d", &N);
+    
+    int* arr = (int*)malloc(N * sizeof(int));
+    for (int i = 0; i < N; i++) {
+        scanf("%d", &arr[i]);
+    }
+    
+    // Build the tree
+    Node* root = buildTreeFromLevelOrder(arr, N);
+    
+    // Print inorder traversal
+    inorderTraversal(root);
+    printf("\n");
+    
+    // Clean up memory
+    freeTree(root);
+    free(arr);
+    
+    return 0;
+}
