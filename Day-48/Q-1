@@ -1,0 +1,103 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+// Binary Tree Node Structure
+typedef struct Node {
+    int data;
+    struct Node* left;
+    struct Node* right;
+} Node;
+
+// Create new node (-1 represents NULL)
+Node* createNode(int data) {
+    if (data == -1) return NULL;
+    
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+// Build Binary Tree from Level Order Traversal
+Node* buildTree(int arr[], int n) {
+    if (n == 0 || arr[0] == -1) return NULL;
+    
+    Node* root = createNode(arr[0]);
+    
+    Node** queue = (Node**)malloc(n * sizeof(Node*));
+    int front = 0, rear = 0;
+    queue[rear++] = root;
+    
+    int i = 1;
+    while (front < rear && i < n) {
+        Node* curr = queue[front++];
+        
+        // Left child
+        if (i < n) {
+            curr->left = createNode(arr[i]);
+            if (curr->left != NULL) {
+                queue[rear++] = curr->left;
+            }
+            i++;
+        }
+        
+        // Right child
+        if (i < n) {
+            curr->right = createNode(arr[i]);
+            if (curr->right != NULL) {
+                queue[rear++] = curr->right;
+            }
+            i++;
+        }
+    }
+    
+    free(queue);
+    return root;
+}
+
+// Function to count leaf nodes
+int countLeafNodes(Node* root) {
+    if (root == NULL) {
+        return 0;
+    }
+    
+    // If node is a leaf (no children)
+    if (root->left == NULL && root->right == NULL) {
+        return 1;
+    }
+    
+    // Recursively count leaves in left and right subtrees
+    return countLeafNodes(root->left) + countLeafNodes(root->right);
+}
+
+// Free tree memory
+void freeTree(Node* root) {
+    if (root == NULL) return;
+    freeTree(root->left);
+    freeTree(root->right);
+    free(root);
+}
+
+int main() {
+    int N;
+    scanf("%d", &N);
+    
+    int* arr = (int*)malloc(N * sizeof(int));
+    for (int i = 0; i < N; i++) {
+        scanf("%d", &arr[i]);
+    }
+    
+    // Build the tree from level order
+    Node* root = buildTree(arr, N);
+    
+    // Count and print number of leaf nodes
+    int leaves = countLeafNodes(root);
+    printf("%d\n", leaves);
+    
+    // Clean up
+    freeTree(root);
+    free(arr);
+    
+    return 0;
+}
